@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MQL Lead Router — Wolters Kluwer CDI</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --wk-blue: #003865;
+    --wk-orange: #E87722;
+    --wk-light: #F4F6F9;
+    --border: #D0D7E3;
+    --text: #1A2332;
+    --muted: #6B7A99;
+    --green: #1A7A4A;
+    --red: #C0392B;
+    --yellow: #D4860A;
+    --radius: 8px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--wk-light);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--wk-blue);
+    color: white;
+    padding: 0 32px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  }
+  header .logo {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    opacity: .85;
+  }
+  header h1 {
+    font-size: 16px;
+    font-weight: 600;
+    border-left: 1px solid rgba(255,255,255,.3);
+    padding-left: 16px;
+  }
+
+  /* ── Layout ── */
+  .layout {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 0;
+    height: calc(100vh - 56px);
+  }
+
+  /* ── Left panel — form ── */
+  .form-panel {
+    background: white;
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .panel-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+  input, select, textarea {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 9px 12px;
+    font-size: 14px;
+    color: var(--text);
+    background: white;
+    transition: border-color .15s, box-shadow .15s;
+    width: 100%;
+    font-family: inherit;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--wk-blue);
+    box-shadow: 0 0 0 3px rgba(0,56,101,.1);
+  }
+  textarea {
+    resize: vertical;
+    min-height: 90px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .submit-btn {
+    background: var(--wk-orange);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    padding: 12px 20px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    transition: background .15s, transform .1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .submit-btn:hover { background: #c96615; }
+  .submit-btn:active { transform: scale(.98); }
+  .submit-btn:disabled { background: #aaa; cursor: not-allowed; }
+
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,.4);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    display: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Right panel — result ── */
+  .result-panel {
+    overflow-y: auto;
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--muted);
+    text-align: center;
+    gap: 12px;
+  }
+  .empty-state svg { opacity: .3; }
+  .empty-state p { font-size: 14px; }
+
+  /* Decision badge */
+  .decision-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+  .badge-valid    { background: #D4EDDA; color: #155724; }
+  .badge-individual { background: #FFF3CD; color: #856404; }
+  .badge-support  { background: #D1ECF1; color: #0C5460; }
+  .badge-commercial { background: #E2D9F3; color: #4A235A; }
+  .badge-scam     { background: #F8D7DA; color: #721C24; }
+  .badge-international { background: #F0F0F0; color: #555; }
+  .badge-clarification { background: #FFF3CD; color: #856404; }
+
+  /* Result cards */
+  .result-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #F8FAFB;
+    border-bottom: 1px solid var(--border);
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: var(--wk-blue);
+  }
+  .copy-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .15s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .copy-btn:hover { border-color: var(--wk-blue); color: var(--wk-blue); }
+  .copy-btn.copied { border-color: var(--green); color: var(--green); }
+  .card-body {
+    padding: 16px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* Markdown-lite rendering */
+  .card-body pre {
+    background: #F4F6F9;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 13px;
+    white-space: pre-wrap;
+    font-family: "Cascadia Code", "Fira Code", "Consolas", monospace;
+    overflow-x: auto;
+  }
+  .card-body code {
+    background: #F4F6F9;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: monospace;
+  }
+  .card-body ul { padding-left: 20px; }
+  .card-body li { margin-bottom: 4px; }
+  .card-body strong { font-weight: 700; }
+  .card-body em { font-style: italic; }
+  .card-body p { margin-bottom: 10px; }
+  .card-body h3 { font-size: 14px; font-weight: 700; margin: 12px 0 6px; color: var(--wk-blue); }
+
+  /* Assignment row */
+  .assignment-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .assign-chip {
+    background: var(--wk-light);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .assign-chip span { font-weight: 700; color: var(--wk-blue); }
+
+  /* Checklist items */
+  .checklist { list-style: none; padding: 0; }
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid #F0F2F5;
+    font-size: 14px;
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .check-box {
+    width: 16px; height: 16px; min-width: 16px;
+    border: 2px solid var(--border);
+    border-radius: 3px;
+    margin-top: 2px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .check-box.done {
+    background: var(--green);
+    border-color: var(--green);
+    position: relative;
+  }
+  .check-box.done::after {
+    content: "✓";
+    position: absolute;
+    color: white;
+    font-size: 11px;
+    left: 1px; top: -1px;
+  }
+  .checklist li.done-item { opacity: .55; text-decoration: line-through; }
+
+  /* Error */
+  .error-msg {
+    background: #FEE;
+    border: 1px solid #F5C6CB;
+    border-radius: var(--radius);
+    padding: 16px;
+    color: var(--red);
+    font-size: 14px;
+  }
+
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; height: auto; }
+    .form-panel { border-right: none; border-bottom: 1px solid var(--border); }
+    .result-panel { padding: 20px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Wolters Kluwer CDI</div>
+  <h1>MQL Lead Router</h1>
+</header>
+
+<div class="layout">
+
+  <!-- ── Form panel ── -->
+  <div class="form-panel">
+    <div>
+      <div class="panel-title">Lead Details</div>
+    </div>
+
+    <div class="form-grid">
+
+      <div class="field">
+        <label>Full Name *</label>
+        <input type="text" id="name" placeholder="Dr. Jane Smith" />
+      </div>
+
+      <div class="field">
+        <label>Email *</label>
+        <input type="email" id="email" placeholder="jane.smith@hospital.org" />
+      </div>
+
+      <div class="field">
+        <label>Title / Role</label>
+        <input type="text" id="title" placeholder="Chief Medical Officer" />
+      </div>
+
+      <div class="field">
+        <label>Company / Organization *</label>
+        <input type="text" id="company" placeholder="Regional Medical Center" />
+      </div>
+
+      <div class="two-col">
+        <div class="field">
+          <label>City, State</label>
+          <input type="text" id="city_state" placeholder="Chicago, IL" />
+        </div>
+        <div class="field">
+          <label>Country</label>
+          <select id="country">
+            <option value="US">United States</option>
+            <option value="Canada">Canada</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Product Interest *</label>
+        <select id="product">
+          <option value="">— Select —</option>
+          <option value="UpToDate">UpToDate</option>
+          <option value="Lexicomp / Lexidrug">Lexicomp / Lexidrug</option>
+          <option value="Medi-Span">Medi-Span</option>
+          <option value="PriceRx">PriceRx</option>
+          <option value="Emmi / Patient Engagement">Emmi / Patient Engagement</option>
+          <option value="Multiple products">Multiple products</option>
+          <option value="Unknown">Unknown</option>
+        </select>
+      </div>
+
+      <div class="two-col">
+        <div class="field">
+          <label># Users / Beds</label>
+          <input type="text" id="num_users" placeholder="e.g. 150 physicians" />
+        </div>
+        <div class="field">
+          <label>Existing Customer?</label>
+          <select id="existing_customer">
+            <option value="Unknown">Unknown</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Lead Source</label>
+        <select id="lead_source">
+          <option value="Website form fill">Website form fill</option>
+          <option value="Lead scoring">Lead scoring</option>
+          <option value="Event">Event</option>
+          <option value="Vendor (Televerde/Lead2Pipeline)">Vendor (Televerde / Lead2Pipeline)</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Comment / Inquiry *</label>
+        <textarea id="comment" placeholder="Paste the prospect's comment or inquiry here. Leave blank if none was provided."></textarea>
+      </div>
+
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="submitLead()">
+      <span id="btnText">Generate Action Packet</span>
+      <div class="spinner" id="spinner"></div>
+    </button>
+  </div>
+
+  <!-- ── Result panel ── -->
+  <div class="result-panel" id="resultPanel">
+    <div class="empty-state" id="emptyState">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+        <rect x="8" y="8" width="48" height="48" rx="8" stroke="#003865" stroke-width="2"/>
+        <path d="M20 32h24M20 22h24M20 42h16" stroke="#003865" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <p>Fill in the lead details on the left<br>and click <strong>Generate Action Packet</strong></p>
+    </div>
+    <div id="resultContent" style="display:none; display:flex; flex-direction:column; gap:16px;"></div>
+  </div>
+
+</div>
+
+<script>
+async function submitLead() {
+  const btn = document.getElementById('submitBtn');
+  const spinner = document.getElementById('spinner');
+  const btnText = document.getElementById('btnText');
+
+  // Gather fields
+  const data = {
+    name:              document.getElementById('name').value.trim(),
+    email:             document.getElementById('email').value.trim(),
+    title:             document.getElementById('title').value.trim(),
+    company:           document.getElementById('company').value.trim(),
+    city_state:        document.getElementById('city_state').value.trim(),
+    country:           document.getElementById('country').value,
+    product:           document.getElementById('product').value,
+    num_users:         document.getElementById('num_users').value.trim(),
+    existing_customer: document.getElementById('existing_customer').value,
+    lead_source:       document.getElementById('lead_source').value,
+    comment:           document.getElementById('comment').value.trim(),
+  };
+
+  if (!data.name || !data.email || !data.company) {
+    alert('Please fill in at least Name, Email, and Company.');
+    return;
+  }
+
+  btn.disabled = true;
+  btnText.textContent = 'Processing…';
+  spinner.style.display = 'block';
+
+  document.getElementById('emptyState').style.display = 'none';
+  const content = document.getElementById('resultContent');
+  content.style.display = 'flex';
+  content.innerHTML = '<div style="color:#6B7A99;font-size:14px;padding:40px 0;text-align:center">Routing lead through AI…</div>';
+
+  try {
+    const res = await fetch('/process', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data)
+    });
+    const json = await res.json();
+
+    if (json.error) {
+      content.innerHTML = `<div class="error-msg"><strong>Error:</strong> ${escHtml(json.error)}</div>`;
+    } else {
+      renderResult(content, json.result, data);
+    }
+  } catch(e) {
+    content.innerHTML = `<div class="error-msg"><strong>Network error:</strong> ${escHtml(e.message)}</div>`;
+  } finally {
+    btn.disabled = false;
+    btnText.textContent = 'Generate Action Packet';
+    spinner.style.display = 'none';
+  }
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderResult(container, markdown, lead) {
+  // Split the markdown into sections by ## headings
+  const sections = markdown.split(/\n(?=## )/);
+  container.innerHTML = '';
+
+  // Determine decision type for badge
+  const decisionMatch = markdown.match(/## DECISION\s*\n([\s\S]*?)(?=\n---|\n##)/);
+  const decisionText = decisionMatch ? decisionMatch[1] : '';
+  const badge = getBadge(decisionText);
+
+  // Summary card (always shown first)
+  const summaryCard = makeCard('Routing Decision', badge + mdToHtml(decisionText), markdown);
+  summaryCard.querySelector('.card-title').style.fontSize = '14px';
+  container.appendChild(summaryCard);
+
+  // Remaining sections
+  const sectionMap = {
+    'SFDC CHECKLIST':       { title: 'SFDC Checklist', isChecklist: true },
+    'QUALIFICATION NOTE':   { title: 'Qualification Note', isCode: true },
+    'EMAIL TO REP':         { title: 'Email to Rep', isEmail: true },
+    'EMAIL TO LEAD':        { title: 'Email to Lead', isEmail: true },
+    'ROUTING NOTES':        { title: 'Routing Notes', isNotes: true },
+  };
+
+  sections.forEach(section => {
+    const headMatch = section.match(/^## ([A-Z ]+)/);
+    if (!headMatch || headMatch[1].trim() === 'DECISION') return;
+    const key = headMatch[1].trim();
+    const meta = sectionMap[key] || { title: key };
+    const body = section.replace(/^## [A-Z ]+\n/, '').trim();
+    if (!body) return;
+
+    let rendered;
+    if (meta.isChecklist) {
+      rendered = renderChecklist(body);
+    } else if (meta.isCode) {
+      // Extract the code block and show it
+      const codeMatch = body.match(/```([\s\S]*?)```/);
+      const codeContent = codeMatch ? codeMatch[1].trim() : body;
+      rendered = `<pre>${escHtml(codeContent)}</pre>` + mdToHtml(body.replace(/```[\s\S]*?```/, ''));
+    } else {
+      rendered = mdToHtml(body);
+    }
+
+    container.appendChild(makeCard(meta.title, rendered, meta.isCode ? extractCode(body) : body));
+  });
+}
+
+function extractCode(md) {
+  const m = md.match(/```([\s\S]*?)```/);
+  return m ? m[1].trim() : md;
+}
+
+function getBadge(text) {
+  const t = text.toUpperCase();
+  let cls = 'badge-valid', label = 'Valid Sales';
+  if (t.includes('INDIVIDUAL')) { cls = 'badge-individual'; label = 'Individual Segment'; }
+  else if (t.includes('SUPPORT')) { cls = 'badge-support'; label = 'Support'; }
+  else if (t.includes('COMMERCIAL')) { cls = 'badge-commercial'; label = 'Commercial'; }
+  else if (t.includes('SCAM')) { cls = 'badge-scam'; label = 'Scam — Disqualify'; }
+  else if (t.includes('INTERNATIONAL')) { cls = 'badge-international'; label = 'International'; }
+  else if (t.includes('CLARIFICATION')) { cls = 'badge-clarification'; label = 'Needs Clarification'; }
+  return `<div style="margin-bottom:12px"><span class="decision-badge ${cls}">${label}</span></div>`;
+}
+
+function mdToHtml(md) {
+  if (!md) return '';
+  let html = escHtml(md);
+  // Bold
+  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  // Inline code
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+  // Checklist items
+  html = html.replace(/^- \[ \] (.+)$/gm, '<li class="checklist-render">☐ $1</li>');
+  // Bullet list items
+  html = html.replace(/^[-*] (.+)$/gm, '<li>$1</li>');
+  // Wrap consecutive <li> in <ul>
+  html = html.replace(/(<li>[\s\S]*?<\/li>)/g, m => {
+    if (m.includes('<ul>')) return m;
+    return `<ul>${m}</ul>`;
+  });
+  // Line breaks
+  html = html.replace(/\n\n/g, '</p><p>');
+  html = html.replace(/\n/g, '<br>');
+  return `<p>${html}</p>`;
+}
+
+function renderChecklist(md) {
+  const lines = md.split('\n');
+  let html = '';
+  let inList = false;
+
+  lines.forEach((line, i) => {
+    const taskMatch = line.match(/^[-*]?\s*\[ \]\s*(.+)$/);
+    const headMatch = line.match(/^\*\*(.+?):\*\*\s*$/);
+    const sectionMatch = line.match(/^\[(IF .+?)\]/);
+
+    if (headMatch) {
+      if (inList) { html += '</ul>'; inList = false; }
+      html += `<h3>${escHtml(headMatch[1])}</h3>`;
+    } else if (sectionMatch) {
+      if (inList) { html += '</ul>'; inList = false; }
+      html += `<p style="margin-top:8px;font-size:12px;color:#6B7A99;font-style:italic">${escHtml(sectionMatch[1])}</p>`;
+    } else if (taskMatch) {
+      if (!inList) { html += '<ul class="checklist">'; inList = true; }
+      const id = 'chk_' + Math.random().toString(36).slice(2);
+      html += `<li id="${id}">
+        <div class="check-box" onclick="toggleCheck('${id}')"></div>
+        <span>${escHtml(taskMatch[1])}</span>
+      </li>`;
+    } else if (line.trim()) {
+      if (inList) { html += '</ul>'; inList = false; }
+      html += `<p style="margin-top:6px">${escHtml(line)}</p>`;
+    }
+  });
+  if (inList) html += '</ul>';
+  return html;
+}
+
+function makeCard(title, htmlContent, rawText) {
+  const card = document.createElement('div');
+  card.className = 'result-card';
+  card.innerHTML = `
+    <div class="card-header">
+      <span class="card-title">${escHtml(title)}</span>
+      <button class="copy-btn" onclick="copyText(this, \`${escJs(rawText)}\`)">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M4 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H4z"/>
+        </svg>
+        Copy
+      </button>
+    </div>
+    <div class="card-body">${htmlContent}</div>
+  `;
+  return card;
+}
+
+function escJs(s) {
+  return String(s).replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\$/g,'\\$');
+}
+
+function copyText(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.classList.add('copied');
+    btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.75.75 0 0 1 1.06-1.06L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0z"/></svg> Copied!`;
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H4z"/></svg> Copy`;
+    }, 2000);
+  });
+}
+
+function toggleCheck(id) {
+  const li = document.getElementById(id);
+  const box = li.querySelector('.check-box');
+  box.classList.toggle('done');
+  li.classList.toggle('done-item');
+}
+
+// Allow Enter in form fields to trigger submit
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.ctrlKey) submitLead();
+});
+</script>
+
+</body>
+</html>

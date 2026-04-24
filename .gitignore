@@ -1,0 +1,9 @@
+.env
+__pycache__/
+*.pyc
+output/
+*.log
+ngrok.exe
+cloudflared.exe
+*.zip
+.claude/

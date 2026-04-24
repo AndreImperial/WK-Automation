@@ -1,0 +1,56 @@
+******************************** Lead 1 Product ***********************
+
+Hi Andrew,
+
+Please see this MQL with the prospect’s specific inquiry below that I’ll be assigning over to you.  I’m adding some additional information, which will be included in the MQL task in the Comments section.
+
+Thanks,
+Syamil
+
+
+******************************** Customer Service ***********************
+
+Dear Customer Service,
+
+I have received the following inquiry from a Lexicomp (user or lead). Can you please help with this request?
+
+This came in via the website. The information they entered into the webform is below. Thank you!
+
+Best,
+Syamil
+
+
+******************************** Lead Multiple Product ***********************
+
+Hi All,
+
+Please see this MQL with the prospect’s specific inquiry below that I’ll be assigning over to [1 Sales Rep Name].  This prospect is interested in [List product here]. I’m adding some additional information, which will be included in the MQL task in the Comments section.
+
+Thanks,
+Syamil
+
+
+******************************** Commercial, Individual (Individual that need to assigned to other than support) ***********************
+
+Hi Michele,
+
+Please see this MQL with the prospect’s specific inquiry below that I’ll be assigning over to you.
+
+Thanks,
+Syamil
+
+
+
+******************************** Reply to Lead Reply Email ***********************
+
+
+Hi,
+
+Thank you for the clarification. I’ve assigned you to our representative, who will assist you further.
+
+Thank you,
+[Your Name]
+
+
+-------------
+

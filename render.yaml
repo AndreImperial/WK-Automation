@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: mql-lead-router
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python webapp/app.py
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
