@@ -8,30 +8,28 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg:        #070C1A;
-    --surface:   #0D1527;
-    --card:      #121E35;
-    --card-alt:  #0F1A2E;
-    --border:    #1C3054;
-    --border-hi: #2A4A7F;
+    --bg:        #050A16;
+    --surface:   #0A1223;
+    --card:      #0F1A30;
+    --card-alt:  #0C1628;
+    --border:    #19305A;
+    --border-hi: #2A4A80;
     --accent:    #3B82F6;
     --accent-dim:#1D4ED8;
     --glow:      rgba(59,130,246,.18);
-    --text:      #D9E4F5;
-    --muted:     #5A7299;
-    --bright:    #EBF2FF;
+    --text:      #D4E2F5;
+    --muted:     #52688A;
+    --bright:    #EBF3FF;
     --green:     #10B981;
     --red:       #F87171;
     --yellow:    #FBBF24;
+    --purple:    #A78BFA;
     --radius:    10px;
+    --font:      -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mono:      "Cascadia Code", "Fira Code", Consolas, monospace;
   }
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-  }
+  body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; }
 
   /* ── Header ── */
   header {
@@ -44,29 +42,16 @@
     gap: 14px;
     flex-shrink: 0;
   }
-  .logo-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 8px var(--accent);
-  }
-  header .brand { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+  .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent), 0 0 20px rgba(59,130,246,.3); animation: pulse-logo 3s ease-in-out infinite; }
+  @keyframes pulse-logo { 0%,100%{opacity:1} 50%{opacity:.5} }
+  .brand { font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); }
   header h1 { font-size: 15px; font-weight: 600; color: var(--bright); border-left: 1px solid var(--border); padding-left: 14px; margin-left: 2px; }
+  .header-spacer { flex: 1; }
+  .model-tag { font-size: 10px; color: var(--muted); background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.2); border-radius: 20px; padding: 2px 10px; letter-spacing: .3px; }
 
-  /* ── Page shell (flex column fills viewport below header) ── */
-  .page-shell {
-    display: flex;
-    flex-direction: column;
-    height: calc(100vh - 52px);
-  }
-
-  /* ── Main layout ── */
-  .layout {
-    display: grid;
-    grid-template-columns: 400px 1fr;
-    flex: 1;
-    overflow: hidden;
-  }
+  /* ── Layout ── */
+  .page-shell { display: flex; flex-direction: column; height: calc(100vh - 52px); }
+  .layout { display: grid; grid-template-columns: 400px 1fr; flex: 1; overflow: hidden; }
 
   /* ── Left panel ── */
   .form-panel {
@@ -74,154 +59,105 @@
     border-right: 1px solid var(--border);
     display: flex;
     flex-direction: column;
-    padding: 24px 20px;
-    gap: 12px;
+    padding: 20px 18px;
+    gap: 10px;
     overflow: hidden;
   }
-  .panel-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
+  .panel-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); }
 
   .paste-hint {
-    font-size: 12px;
-    color: var(--muted);
-    line-height: 1.6;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 10px 14px;
+    font-size: 12px; color: var(--muted); line-height: 1.6;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 9px 12px;
   }
   .paste-hint strong { color: var(--text); }
 
   .lead-textarea {
-    flex: 1;
-    resize: none;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 14px;
-    font-size: 13px;
-    color: var(--text);
-    font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
-    line-height: 1.65;
-    transition: border-color .2s, box-shadow .2s;
-    outline: none;
+    flex: 1; resize: none;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 13px;
+    font-size: 12.5px; color: var(--text);
+    font-family: var(--mono); line-height: 1.65;
+    transition: border-color .2s, box-shadow .2s; outline: none;
   }
-  .lead-textarea::placeholder { color: var(--muted); }
+  .lead-textarea::placeholder { color: var(--muted); opacity: .7; }
   .lead-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--glow); }
 
-  .char-count {
-    font-size: 11px;
-    color: var(--muted);
-    text-align: right;
-    transition: color .2s;
-  }
+  .char-count { font-size: 11px; color: var(--muted); text-align: right; transition: color .2s; }
   .char-count.warn { color: var(--yellow); }
   .char-count.over { color: var(--red); font-weight: 700; }
 
-  .btn-row { display: flex; gap: 10px; }
-
+  .btn-row { display: flex; gap: 8px; }
   .new-lead-btn {
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 12px 14px;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--muted);
-    cursor: pointer;
-    transition: all .15s;
-    white-space: nowrap;
+    background: none; border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 11px 12px;
+    font-size: 12px; font-weight: 600; color: var(--muted);
+    cursor: pointer; transition: all .15s; white-space: nowrap;
   }
   .new-lead-btn:hover { border-color: var(--border-hi); color: var(--text); }
 
   .submit-btn {
-    flex: 1;
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: var(--radius);
-    padding: 12px 20px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
+    flex: 1; background: var(--accent); color: white; border: none;
+    border-radius: var(--radius); padding: 12px 18px;
+    font-size: 13.5px; font-weight: 700; cursor: pointer;
     transition: background .15s, box-shadow .15s, transform .1s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    letter-spacing: .3px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
   }
-  .submit-btn:hover { background: var(--accent-dim); box-shadow: 0 0 16px var(--glow); }
-  .submit-btn:active { transform: scale(.98); }
-  .submit-btn:disabled { background: #1C2E4A; color: var(--muted); cursor: not-allowed; box-shadow: none; }
+  .submit-btn:hover:not(:disabled) { background: var(--accent-dim); box-shadow: 0 0 20px var(--glow); }
+  .submit-btn:active:not(:disabled) { transform: scale(.98); }
+  .submit-btn:disabled { background: #162040; color: var(--muted); cursor: not-allowed; }
 
-  .spinner {
-    width: 16px; height: 16px;
-    border: 2px solid rgba(255,255,255,.25);
-    border-top-color: white;
-    border-radius: 50%;
-    animation: spin .7s linear infinite;
-    display: none;
-  }
+  .spinner { width: 15px; height: 15px; border: 2px solid rgba(255,255,255,.25); border-top-color: white; border-radius: 50%; animation: spin .7s linear infinite; display: none; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
   /* ── Right panel ── */
-  .result-panel {
-    overflow-y: auto;
-    padding: 24px 28px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    background: var(--bg);
-  }
+  .result-panel { overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 12px; background: var(--bg); scroll-behavior: smooth; }
 
-  .empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    color: var(--muted);
-    text-align: center;
-    gap: 14px;
-  }
-  .empty-state svg { opacity: .2; }
-  .empty-state p { font-size: 13px; line-height: 1.7; }
+  /* ── Empty state ── */
+  .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--muted); text-align: center; gap: 16px; }
+  .empty-state svg { opacity: .15; }
+  .empty-state p { font-size: 13px; line-height: 1.75; }
+  .shortcut-hint { font-size: 11px; color: var(--muted); background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 3px 10px; display: inline-block; margin-top: 4px; }
 
-  /* ── Loading dots ── */
-  .loading-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60px 0 40px;
-    gap: 20px;
+  /* ── Results toolbar ── */
+  .results-toolbar {
+    display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+    padding-bottom: 4px; border-bottom: 1px solid var(--border);
   }
-  .loading-dots { display: flex; gap: 8px; }
-  .loading-dots span {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: var(--accent);
-    animation: pulse-dot 1.2s ease-in-out infinite;
+  .tb-label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .8px; flex: 1; }
+  .tb-btn {
+    background: none; border: 1px solid var(--border); border-radius: 6px;
+    padding: 4px 10px; font-size: 11px; font-weight: 600;
+    color: var(--muted); cursor: pointer; transition: all .15s;
+    display: flex; align-items: center; gap: 5px;
   }
-  .loading-dots span:nth-child(2) { animation-delay: .2s; }
-  .loading-dots span:nth-child(3) { animation-delay: .4s; }
-  @keyframes pulse-dot {
-    0%, 80%, 100% { transform: scale(.5); opacity: .25; }
-    40%            { transform: scale(1);  opacity: 1; }
+  .tb-btn:hover { border-color: var(--border-hi); color: var(--text); }
+  .elapsed-tag { font-size: 10px; color: var(--muted); background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 2px 9px; }
+
+  /* ── Streaming preview ── */
+  .stream-wrap { display: flex; flex-direction: column; gap: 12px; }
+  .stream-header { display: flex; align-items: center; gap: 12px; }
+  .stream-dots { display: flex; gap: 6px; }
+  .stream-dots span { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: pulse-dot 1.2s ease-in-out infinite; }
+  .stream-dots span:nth-child(2) { animation-delay: .2s; }
+  .stream-dots span:nth-child(3) { animation-delay: .4s; }
+  @keyframes pulse-dot { 0%,80%,100%{transform:scale(.5);opacity:.25} 40%{transform:scale(1);opacity:1} }
+  .stream-status { font-size: 12px; color: var(--muted); }
+  .progress-bar-wrap { height: 2px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .progress-bar { height: 100%; background: linear-gradient(90deg, var(--accent), #60A5FA); border-radius: 2px; width: 0%; transition: width 1s linear; }
+  .stream-text {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px;
+    font-size: 12px; font-family: var(--mono); color: #88AACC;
+    line-height: 1.65; white-space: pre-wrap; word-break: break-word;
+    max-height: calc(100vh - 260px); overflow-y: auto;
   }
-  .loading-label { font-size: 12px; color: var(--muted); letter-spacing: .3px; }
 
   /* ── Decision badge ── */
   .decision-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 13px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .6px;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 14px; border-radius: 20px; font-size: 11px;
+    font-weight: 700; text-transform: uppercase; letter-spacing: .7px;
   }
   .badge-valid        { background: rgba(16,185,129,.15);  color: #34D399; border: 1px solid rgba(16,185,129,.3); }
   .badge-individual   { background: rgba(251,191,36,.12);  color: #FCD34D; border: 1px solid rgba(251,191,36,.3); }
@@ -232,197 +168,96 @@
   .badge-clarification{ background: rgba(251,191,36,.12);  color: #FCD34D; border: 1px solid rgba(251,191,36,.3); }
 
   /* ── Result cards ── */
-  @keyframes card-in {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .result-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-    animation: card-in .28s ease both;
-  }
+  @keyframes card-in { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+  .result-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; animation: card-in .25s ease both; }
+  .result-card.collapsed .card-body { display: none; }
+
   .card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 16px;
-    background: var(--card-alt);
-    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 9px 14px; background: var(--card-alt);
+    border-bottom: 1px solid var(--border); cursor: pointer;
+    user-select: none; transition: background .15s;
   }
-  .card-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--accent); }
+  .card-header:hover { background: #101E35; }
+  .card-header-left { display: flex; align-items: center; gap: 8px; }
+  .card-title { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .9px; color: var(--accent); }
+  .collapse-arrow { color: var(--muted); font-size: 10px; transition: transform .2s; }
+  .result-card.collapsed .collapse-arrow { transform: rotate(-90deg); }
+  .card-actions { display: flex; gap: 6px; align-items: center; }
+
   .copy-btn {
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 3px 10px;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--muted);
-    cursor: pointer;
-    transition: all .15s;
-    display: flex;
-    align-items: center;
-    gap: 4px;
+    background: none; border: 1px solid var(--border); border-radius: 6px;
+    padding: 3px 9px; font-size: 10.5px; font-weight: 600; color: var(--muted);
+    cursor: pointer; transition: all .15s; display: flex; align-items: center; gap: 4px;
+    white-space: nowrap;
   }
   .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
   .copy-btn.copied { border-color: var(--green); color: var(--green); }
 
-  .card-body { padding: 16px; font-size: 13.5px; line-height: 1.65; color: var(--text); }
-
-  .card-body pre {
-    background: #0A1020;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px;
-    font-size: 12.5px;
-    white-space: pre-wrap;
-    font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
-    color: #A8C4E8;
-    overflow-x: auto;
-  }
-  .card-body code { background: #0A1020; padding: 1px 5px; border-radius: 4px; font-size: 12.5px; font-family: monospace; color: #7DD3FC; }
+  .card-body { padding: 15px; font-size: 13.5px; line-height: 1.7; color: var(--text); }
+  .card-body pre { background: #080F1E; border: 1px solid var(--border); border-radius: 8px; padding: 14px; font-size: 12px; white-space: pre-wrap; font-family: var(--mono); color: #90B4D8; overflow-x: auto; }
+  .card-body code { background: #080F1E; padding: 1px 5px; border-radius: 4px; font-size: 12.5px; font-family: var(--mono); color: #7DD3FC; }
   .card-body ul { padding-left: 18px; }
-  .card-body li { margin-bottom: 4px; }
+  .card-body li { margin-bottom: 5px; }
   .card-body strong { font-weight: 700; color: var(--bright); }
   .card-body em { font-style: italic; color: var(--muted); }
   .card-body p { margin-bottom: 10px; }
-  .card-body h3 { font-size: 11px; font-weight: 700; margin: 14px 0 6px; color: var(--accent); text-transform: uppercase; letter-spacing: .5px; }
+  .card-body h3 { font-size: 10.5px; font-weight: 700; margin: 14px 0 6px; color: var(--accent); text-transform: uppercase; letter-spacing: .6px; }
 
   /* ── Checklist ── */
   .checklist { list-style: none; padding: 0; }
-  .checklist li {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 7px 0;
-    border-bottom: 1px solid rgba(28,48,84,.6);
-    font-size: 13.5px;
-  }
+  .checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 7px 0; border-bottom: 1px solid rgba(25,48,90,.5); font-size: 13.5px; }
   .checklist li:last-child { border-bottom: none; }
-  .check-box {
-    width: 16px; height: 16px; min-width: 16px;
-    border: 2px solid var(--border-hi);
-    border-radius: 4px;
-    margin-top: 2px;
-    cursor: pointer;
-    transition: all .15s;
-    position: relative;
-  }
+  .check-box { width: 16px; height: 16px; min-width: 16px; border: 2px solid var(--border-hi); border-radius: 4px; margin-top: 2px; cursor: pointer; transition: all .15s; position: relative; }
   .check-box.done { background: var(--green); border-color: var(--green); }
   .check-box.done::after { content: "✓"; position: absolute; color: white; font-size: 11px; left: 1px; top: -1px; }
-  .checklist li.done-item { opacity: .45; text-decoration: line-through; }
+  .checklist li.done-item { opacity: .4; text-decoration: line-through; }
 
-  /* ── Rich error block ── */
-  .error-block {
-    background: rgba(248,113,113,.07);
-    border: 1px solid rgba(248,113,113,.25);
-    border-radius: var(--radius);
-    padding: 16px 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
+  /* ── Error block ── */
+  .error-block { background: rgba(248,113,113,.07); border: 1px solid rgba(248,113,113,.25); border-radius: var(--radius); padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; }
   .error-header { display: flex; align-items: center; gap: 10px; }
   .error-icon { font-size: 16px; }
-  .error-category {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: .8px;
-    text-transform: uppercase;
-    background: rgba(248,113,113,.15);
-    border-radius: 4px;
-    padding: 2px 7px;
-    color: var(--red);
-  }
+  .error-category { font-size: 10px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; background: rgba(248,113,113,.15); border-radius: 4px; padding: 2px 7px; color: var(--red); }
   .error-detail { font-size: 13px; color: var(--text); line-height: 1.6; }
-  .error-hint {
-    font-size: 12px;
-    color: var(--muted);
-    line-height: 1.55;
-    border-top: 1px solid rgba(248,113,113,.15);
-    padding-top: 8px;
-    margin-top: 2px;
-  }
+  .error-hint { font-size: 12px; color: var(--muted); line-height: 1.55; border-top: 1px solid rgba(248,113,113,.15); padding-top: 8px; }
 
   /* ── History bar ── */
-  .history-toggle {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 0 28px;
-    height: 36px;
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    cursor: pointer;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .8px;
-    color: var(--muted);
-    user-select: none;
-    transition: color .15s;
-    flex-shrink: 0;
-  }
+  .history-toggle { display: flex; align-items: center; gap: 10px; padding: 0 24px; height: 36px; background: var(--surface); border-top: 1px solid var(--border); cursor: pointer; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .9px; color: var(--muted); user-select: none; transition: color .15s; flex-shrink: 0; }
   .history-toggle:hover { color: var(--text); }
   .hist-arrow { transition: transform .25s; }
   .history-toggle.open .hist-arrow { transform: rotate(180deg); }
   #histCount { color: var(--accent); }
   .hist-spacer { flex: 1; }
-  .hist-clear {
-    background: none;
-    border: 1px solid rgba(248,113,113,.3);
-    border-radius: 6px;
-    padding: 2px 10px;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: .5px;
-    text-transform: uppercase;
-    color: var(--red);
-    cursor: pointer;
-    transition: all .15s;
-  }
+  .hist-clear { background: none; border: 1px solid rgba(248,113,113,.25); border-radius: 6px; padding: 2px 9px; font-size: 10px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: var(--red); cursor: pointer; transition: all .15s; }
   .hist-clear:hover { background: rgba(248,113,113,.1); }
 
-  .history-panel {
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height .35s ease;
-    flex-shrink: 0;
-  }
-  .history-panel.open { max-height: 300px; }
-  .history-list {
-    overflow-y: auto;
-    max-height: 260px;
-    padding: 10px 28px 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .history-entry {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: border-color .15s;
-  }
+  .history-panel { background: var(--surface); border-top: 1px solid var(--border); max-height: 0; overflow: hidden; transition: max-height .35s ease; flex-shrink: 0; }
+  .history-panel.open { max-height: 280px; }
+  .history-list { overflow-y: auto; max-height: 245px; padding: 8px 24px 12px; display: flex; flex-direction: column; gap: 5px; }
+  .history-entry { display: flex; align-items: center; gap: 10px; padding: 7px 11px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: border-color .15s; }
   .history-entry:hover { border-color: var(--accent); }
-  .hist-time { font-size: 11px; color: var(--muted); white-space: nowrap; min-width: 68px; }
+  .hist-time { font-size: 10.5px; color: var(--muted); white-space: nowrap; min-width: 64px; }
   .hist-company { flex: 1; font-size: 13px; font-weight: 500; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
+  /* ── Print styles ── */
+  @media print {
+    header, .form-panel, .history-toggle, .history-panel, .results-toolbar,
+    .copy-btn, .new-lead-btn, .submit-btn, .collapse-arrow { display: none !important; }
+    .page-shell, .layout { display: block; height: auto; overflow: visible; }
+    .result-panel { padding: 0; overflow: visible; }
+    .result-card { break-inside: avoid; margin-bottom: 16px; border: 1px solid #ccc; }
+    .result-card.collapsed .card-body { display: block !important; }
+    body { background: white; color: black; }
+    .card-body { color: black; }
+    .card-body pre { background: #f5f5f5; color: black; border: 1px solid #ddd; }
+  }
+
+  /* ── Responsive ── */
   @media (max-width: 860px) {
     .layout { grid-template-columns: 1fr; overflow: auto; }
-    .form-panel { height: 55vh; border-right: none; border-bottom: 1px solid var(--border); }
-    .result-panel { padding: 16px; }
-    .history-toggle { padding: 0 16px; }
-    .history-list { padding: 10px 16px 14px; }
+    .form-panel { height: 50vh; border-right: none; border-bottom: 1px solid var(--border); }
+    .result-panel { padding: 14px 16px; }
+    .history-toggle, .history-list { padding-left: 16px; padding-right: 16px; }
   }
 </style>
 </head>
@@ -432,6 +267,8 @@
   <div class="logo-dot"></div>
   <div class="brand">Wolters Kluwer CDI</div>
   <h1>MQL Lead Router</h1>
+  <div class="header-spacer"></div>
+  <div class="model-tag">Llama 3.3 70B</div>
 </header>
 
 <div class="page-shell">
@@ -442,7 +279,8 @@
       <div class="panel-label">Lead Input</div>
 
       <div class="paste-hint">
-        Paste the full Salesforce lead record. The AI will extract all relevant fields automatically.
+        Paste the full Salesforce lead record or form-fill email. The AI extracts all fields automatically.<br>
+        <strong>Ctrl + Enter</strong> to submit.
       </div>
 
       <textarea
@@ -451,15 +289,17 @@
         placeholder="Paste Salesforce lead record here…
 
 Example:
-First Name: John
-Last Name: Smith
-Email: j.smith@generalhospital.org
-Title: Director of Pharmacy
-Company: General Hospital
-City / State: Dallas, TX
-Product Interest: Lexicomp
-Number of Users: 45 pharmacists
-Comments: Evaluating drug reference tools for our pharmacy department.
+First Name: Maria
+Last Name: Thornton
+Email: mthornton@stjoseph.org
+Title: Chief Medical Officer
+Company: St. Joseph Regional Medical Center
+City: Indianapolis
+State/Province: Indiana
+Zip: 46202
+Product Interest: UpToDate
+Number of Users: 85
+Comments: Looking to expand our UpToDate subscription for the full medical staff.
 Lead Source: Website form fill
 Existing Customer: No"
       ></textarea>
@@ -467,7 +307,7 @@ Existing Customer: No"
       <div class="char-count" id="charCount">0 / 8,000</div>
 
       <div class="btn-row">
-        <button class="new-lead-btn" id="newLeadBtn" onclick="newLead()" style="display:none">✕ Clear</button>
+        <button class="new-lead-btn" id="newLeadBtn" style="display:none" onclick="newLead()">✕ Clear</button>
         <button class="submit-btn" id="submitBtn" onclick="submitLead()">
           <span id="btnText">Generate Action Packet</span>
           <div class="spinner" id="spinner"></div>
@@ -478,22 +318,21 @@ Existing Customer: No"
     <!-- ── Result panel ── -->
     <div class="result-panel" id="resultPanel">
       <div class="empty-state" id="emptyState">
-        <svg width="56" height="56" viewBox="0 0 64 64" fill="none">
+        <svg width="52" height="52" viewBox="0 0 64 64" fill="none">
           <rect x="8" y="8" width="48" height="48" rx="10" stroke="#3B82F6" stroke-width="1.5"/>
           <path d="M20 32h24M20 22h24M20 42h16" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
-        <p>Paste a Salesforce lead record on the left<br>and click <strong style="color:#D9E4F5">Generate Action Packet</strong><br><span style="font-size:11px;color:#5A7299;display:block;margin-top:4px">Ctrl + Enter to submit</span></p>
+        <p>Paste a Salesforce lead record on the left<br>and click <strong style="color:#D4E2F5">Generate Action Packet</strong></p>
+        <span class="shortcut-hint">Ctrl + Enter to submit</span>
       </div>
-      <div id="resultContent" style="display:none; flex-direction:column; gap:14px;"></div>
+      <div id="resultContent" style="display:none; flex-direction:column; gap:12px;"></div>
     </div>
 
-  </div><!-- /.layout -->
+  </div>
 
   <!-- ── History bar ── -->
   <div class="history-toggle" id="histToggle" onclick="toggleHistory()">
-    <svg class="hist-arrow" width="11" height="11" viewBox="0 0 16 16" fill="currentColor">
-      <path d="M8 4l5 7H3l5-7z"/>
-    </svg>
+    <svg class="hist-arrow" width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M8 4l5 7H3l5-7z"/></svg>
     <span>Recent Leads</span>
     <span id="histCount"></span>
     <div class="hist-spacer"></div>
@@ -502,54 +341,76 @@ Existing Customer: No"
   <div class="history-panel" id="histPanel">
     <div class="history-list" id="histList"></div>
   </div>
-
-</div><!-- /.page-shell -->
+</div>
 
 <script>
 // ── Utilities ────────────────────────────────────────────────────────────────
 
-function escHtml(s) {
+function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-// ── Character counter ─────────────────────────────────────────────────────────
+// ── Char counter ──────────────────────────────────────────────────────────────
 
 const textarea = document.getElementById('rawLead');
-const charCount = document.getElementById('charCount');
+const charCountEl = document.getElementById('charCount');
 
-textarea.addEventListener('input', function() {
-  const len = this.value.length;
-  charCount.textContent = `${len.toLocaleString()} / 8,000`;
-  charCount.className = 'char-count';
-  if (len > 8000)      charCount.classList.add('over');
-  else if (len > 3000) charCount.classList.add('warn');
+textarea.addEventListener('input', () => {
+  const n = textarea.value.length;
+  charCountEl.textContent = `${n.toLocaleString()} / 8,000`;
+  charCountEl.className = 'char-count' + (n > 8000 ? ' over' : n > 3000 ? ' warn' : '');
 });
 
 // ── Error display ─────────────────────────────────────────────────────────────
 
-const ERROR_META = {
-  timeout:    { icon: '⏱', category: 'Timeout',    hint: 'The AI service took too long. Click Generate again — it usually succeeds on retry.' },
-  auth:       { icon: '🔑', category: 'Auth Error', hint: 'The API key is missing or invalid. Check the GROQ_API_KEY in the .env file.' },
-  rate_limit: { icon: '⏳', category: 'Rate Limit', hint: 'Too many requests. Wait about 60 seconds then try again.' },
-  input:      { icon: '✏️', category: 'Input',      hint: 'Check the length and content of the pasted text.' },
-  unknown:    { icon: '⚠️', category: 'Error',      hint: 'Something unexpected happened. Try again or contact support.' },
+const ERR_META = {
+  timeout:    { icon: '⏱', cat: 'Timeout',    hint: 'The AI took too long. Click Generate again — it usually works on retry.' },
+  auth:       { icon: '🔑', cat: 'Auth Error', hint: 'API key missing or invalid. Check GROQ_API_KEY in the .env file.' },
+  rate_limit: { icon: '⏳', cat: 'Rate Limit', hint: 'Too many requests. Wait ~60 seconds then try again.' },
+  input:      { icon: '✏️', cat: 'Input',      hint: 'Check the length and content of the pasted text.' },
+  unknown:    { icon: '⚠️', cat: 'Error',      hint: 'Something unexpected happened. Try again.' },
 };
 
 function renderError(container, message, errorType) {
-  const meta = ERROR_META[errorType] || ERROR_META.unknown;
-  container.innerHTML = `
-    <div class="error-block">
-      <div class="error-header">
-        <span class="error-icon">${meta.icon}</span>
-        <span class="error-category">${meta.category}</span>
-      </div>
-      <div class="error-detail">${escHtml(message)}</div>
-      <div class="error-hint">${escHtml(meta.hint)}</div>
-    </div>
-  `;
+  const m = ERR_META[errorType] || ERR_META.unknown;
+  container.innerHTML = `<div class="error-block">
+    <div class="error-header"><span class="error-icon">${m.icon}</span><span class="error-category">${m.cat}</span></div>
+    <div class="error-detail">${esc(message)}</div>
+    <div class="error-hint">${esc(m.hint)}</div>
+  </div>`;
 }
 
-// ── Submit ────────────────────────────────────────────────────────────────────
+// ── Submit & streaming ────────────────────────────────────────────────────────
+
+let startTime = 0;
+let progressInterval = null;
+let progressPct = 0;
+
+function startProgress() {
+  startTime = Date.now();
+  progressPct = 0;
+  clearInterval(progressInterval);
+  progressInterval = setInterval(() => {
+    // Ease toward 90% over ~35s, never reaches 100% until done
+    const elapsed = (Date.now() - startTime) / 1000;
+    progressPct = 90 * (1 - Math.exp(-elapsed / 20));
+    const bar = document.getElementById('progressBar');
+    if (bar) bar.style.width = progressPct + '%';
+    const status = document.getElementById('streamStatus');
+    if (status) {
+      if (elapsed < 5)       status.textContent = 'Analyzing lead…';
+      else if (elapsed < 12) status.textContent = 'Looking up territory and reps…';
+      else if (elapsed < 22) status.textContent = 'Building action packet…';
+      else                   status.textContent = 'Finalizing output…';
+    }
+  }, 800);
+}
+
+function stopProgress() {
+  clearInterval(progressInterval);
+  const bar = document.getElementById('progressBar');
+  if (bar) { bar.style.transition = 'width .3s ease'; bar.style.width = '100%'; }
+}
 
 async function submitLead() {
   const raw = textarea.value.trim();
@@ -567,39 +428,93 @@ async function submitLead() {
   const content = document.getElementById('resultContent');
   content.style.display = 'flex';
   content.innerHTML = `
-    <div class="loading-wrap">
-      <div class="loading-dots"><span></span><span></span><span></span></div>
-      <div class="loading-label">Routing lead — this takes 10–20 seconds</div>
+    <div class="stream-wrap">
+      <div class="stream-header">
+        <div class="stream-dots"><span></span><span></span><span></span></div>
+        <div class="stream-status" id="streamStatus">Analyzing lead…</div>
+      </div>
+      <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+      <pre class="stream-text" id="streamPre"></pre>
     </div>
   `;
+
+  startProgress();
+
+  let fullText = '';
+  let streamPre = document.getElementById('streamPre');
+  let gotError = false;
 
   try {
     const res = await fetch('/process', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ raw_text: raw })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ raw_text: raw }),
     });
-    const json = await res.json();
-    if (json.error) {
+
+    if (!res.ok || !res.body) {
+      // Non-streaming error response
+      const json = await res.json().catch(() => ({ error: 'Server error', error_type: 'unknown' }));
+      stopProgress();
       renderError(content, json.error, json.error_type || 'unknown');
+      gotError = true;
     } else {
-      renderResult(content, json.result);
-      addHistoryEntry(json.result);
-      document.getElementById('newLeadBtn').style.display = 'block';
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let sseBuffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        sseBuffer += decoder.decode(value, { stream: true });
+        const lines = sseBuffer.split('\n');
+        sseBuffer = lines.pop();
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          let evt;
+          try { evt = JSON.parse(line.slice(6)); } catch { continue; }
+
+          if (evt.chunk) {
+            fullText += evt.chunk;
+            streamPre.textContent = fullText;
+            streamPre.scrollTop = streamPre.scrollHeight;
+          } else if (evt.done) {
+            stopProgress();
+            renderResult(content, fullText);
+            addHistoryEntry(fullText);
+            document.getElementById('newLeadBtn').style.display = 'block';
+            // Scroll result panel to top
+            document.getElementById('resultPanel').scrollTo({ top: 0, behavior: 'smooth' });
+            // On mobile, scroll page so results are visible
+            if (window.innerWidth <= 860) {
+              document.getElementById('resultPanel').scrollIntoView({ behavior: 'smooth' });
+            }
+          } else if (evt.error) {
+            stopProgress();
+            renderError(content, evt.error, evt.error_type || 'unknown');
+            gotError = true;
+          }
+        }
+      }
     }
-  } catch(e) {
+  } catch (e) {
+    stopProgress();
     renderError(content, e.message, 'unknown');
+    gotError = true;
   } finally {
     btn.disabled = false;
     btnText.textContent = 'Generate Action Packet';
     spinner.style.display = 'none';
+    if (!gotError && !fullText) {
+      renderError(content, 'No response received. Try again.', 'unknown');
+    }
   }
 }
 
 function newLead() {
   textarea.value = '';
-  charCount.textContent = '0 / 8,000';
-  charCount.className = 'char-count';
+  charCountEl.textContent = '0 / 8,000';
+  charCountEl.className = 'char-count';
   document.getElementById('resultContent').style.display = 'none';
   document.getElementById('resultContent').innerHTML = '';
   document.getElementById('emptyState').style.display = 'flex';
@@ -609,13 +524,37 @@ function newLead() {
 
 // ── Result rendering ──────────────────────────────────────────────────────────
 
+let allCollapsed = false;
+
 function renderResult(container, markdown) {
-  const sections = markdown.split(/\n(?=## )/);
   container.innerHTML = '';
 
-  const decisionMatch = markdown.match(/## DECISION\s*\n([\s\S]*?)(?=\n---|\n##)/);
+  // Toolbar
+  const elapsed = Math.round((Date.now() - startTime) / 1000);
+  const toolbar = document.createElement('div');
+  toolbar.className = 'results-toolbar';
+  toolbar.innerHTML = `
+    <span class="tb-label">Action Packet</span>
+    <span class="elapsed-tag">${elapsed}s</span>
+    <button class="tb-btn" onclick="toggleAllCards()">
+      <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M1 4h14v2H1V4zm0 5h14v2H1V9z"/></svg>
+      Collapse All
+    </button>
+    <button class="tb-btn" onclick="copyAllText(${JSON.stringify(markdown).replace(/'/g,"\\'")})" id="copyAllBtn">
+      <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M4 2h8a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2zm0 1a1 1 0 00-1 1v8a1 1 0 001 1h8a1 1 0 001-1V4a1 1 0 00-1-1H4z"/></svg>
+      Copy All
+    </button>
+    <button class="tb-btn" onclick="window.print()">
+      <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M3 4v3H1.5A1.5 1.5 0 000 8.5v4A1.5 1.5 0 001.5 14H3v-3h10v3h1.5A1.5 1.5 0 0016 12.5v-4A1.5 1.5 0 0014.5 7H13V4a1 1 0 00-1-1H4a1 1 0 00-1 1zm1 0h8v3H4V4zm0 7h8v3H4v-3z"/></svg>
+      Print
+    </button>
+  `;
+  container.appendChild(toolbar);
+
+  // Decision card first
+  const decisionMatch = markdown.match(/## DECISION\s*\n([\s\S]*?)(?=\n---|\n##|$)/);
   const decisionText  = decisionMatch ? decisionMatch[1] : '';
-  container.appendChild(makeCard('Routing Decision', getBadge(decisionText) + mdToHtml(decisionText), markdown, 0));
+  container.appendChild(makeCard('Routing Decision', getBadge(decisionText) + mdToHtml(decisionText), markdown, 0, false));
 
   const sectionMap = {
     'SFDC CHECKLIST':     { title: 'SFDC Checklist',    isChecklist: true },
@@ -626,12 +565,13 @@ function renderResult(container, markdown) {
     'ROUTING NOTES':      { title: 'Routing Notes' },
   };
 
+  const sections = markdown.split(/\n(?=## )/);
   let idx = 1;
   sections.forEach(section => {
     const headMatch = section.match(/^## ([A-Z ]+)/);
     if (!headMatch || headMatch[1].trim() === 'DECISION') return;
     const key  = headMatch[1].trim();
-    const meta = sectionMap[key] || { title: key };
+    const meta = sectionMap[key] || { title: key.charAt(0) + key.slice(1).toLowerCase() };
     const body = section.replace(/^## [A-Z ]+\n/, '').trim();
     if (!body) return;
 
@@ -640,40 +580,47 @@ function renderResult(container, markdown) {
       rendered    = renderChecklist(body);
       copyPayload = body;
     } else if (meta.isCode) {
-      const codeMatch = body.match(/```([\s\S]*?)```/);
-      const code      = codeMatch ? codeMatch[1].trim() : body;
-      rendered    = `<pre>${escHtml(code)}</pre>` + mdToHtml(body.replace(/```[\s\S]*?```/, ''));
+      const cm    = body.match(/```([\s\S]*?)```/);
+      const code  = cm ? cm[1].trim() : body;
+      rendered    = `<pre>${esc(code)}</pre>` + mdToHtml(body.replace(/```[\s\S]*?```/, ''));
       copyPayload = code;
     } else {
       rendered    = mdToHtml(body);
       copyPayload = body;
     }
 
-    container.appendChild(makeCard(meta.title, rendered, copyPayload, idx++));
+    // Collapse email/routing notes by default to keep view clean
+    const startCollapsed = key === 'ROUTING NOTES';
+    container.appendChild(makeCard(meta.title, rendered, copyPayload, idx++, startCollapsed));
   });
 }
 
 function getBadge(text) {
   const t = text.toUpperCase();
-  let cls = 'badge-valid', label = 'Valid Sales';
-  if      (t.includes('INDIVIDUAL'))    { cls = 'badge-individual';     label = 'Individual Segment'; }
-  else if (t.includes('SUPPORT'))       { cls = 'badge-support';        label = 'Support'; }
-  else if (t.includes('COMMERCIAL'))    { cls = 'badge-commercial';     label = 'Commercial'; }
-  else if (t.includes('SCAM'))          { cls = 'badge-scam';           label = 'Scam — Disqualify'; }
-  else if (t.includes('INTERNATIONAL')) { cls = 'badge-international';  label = 'International'; }
-  else if (t.includes('CLARIFICATION')) { cls = 'badge-clarification';  label = 'Needs Clarification'; }
-  return `<div style="margin-bottom:12px"><span class="decision-badge ${cls}">${label}</span></div>`;
+  const map = [
+    ['INDIVIDUAL',    'badge-individual',    '🟡 Individual Segment'],
+    ['SUPPORT',       'badge-support',       '🔵 Support'],
+    ['COMMERCIAL',    'badge-commercial',    '🟣 Commercial'],
+    ['SCAM',          'badge-scam',          '🔴 Scam — Disqualify'],
+    ['INTERNATIONAL', 'badge-international', '⚫ International'],
+    ['CLARIFICATION', 'badge-clarification', '🟡 Needs Clarification'],
+    ['VALID',         'badge-valid',         '🟢 Valid Sales'],
+  ];
+  for (const [kw, cls, label] of map) {
+    if (t.includes(kw)) return `<div style="margin-bottom:12px"><span class="decision-badge ${cls}">${label}</span></div>`;
+  }
+  return `<div style="margin-bottom:12px"><span class="decision-badge badge-valid">🟢 Valid Sales</span></div>`;
 }
 
 function mdToHtml(md) {
   if (!md) return '';
-  let html = escHtml(md);
+  let html = esc(md);
   html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   html = html.replace(/`([^`]+)`/g,     '<code>$1</code>');
   html = html.replace(/^[-*] (.+)$/gm,  '<li>$1</li>');
-  html = html.replace(/(<li>[\s\S]*?<\/li>)/g, m => `<ul>${m}</ul>`);
+  html = html.replace(/(<li>.*<\/li>\n?)+/g, m => `<ul>${m}</ul>`);
   html = html.replace(/\n\n/g, '</p><p>');
-  html = html.replace(/\n/g,   '<br>');
+  html = html.replace(/\n/g, '<br>');
   return `<p>${html}</p>`;
 }
 
@@ -681,42 +628,46 @@ function renderChecklist(md) {
   const lines = md.split('\n');
   let html = '', inList = false;
   lines.forEach(line => {
-    const taskMatch    = line.match(/^[-*]?\s*\[ \]\s*(.+)$/);
-    const headMatch    = line.match(/^\*\*(.+?):\*\*\s*$/);
-    const sectionMatch = line.match(/^\[(IF .+?)\]/);
-    if (headMatch) {
+    const task    = line.match(/^[-*]?\s*\[ \]\s*(.+)$/);
+    const head    = line.match(/^\*\*(.+?):\*\*\s*$/);
+    const section = line.match(/^\[(IF .+?)\]/);
+    if (head) {
       if (inList) { html += '</ul>'; inList = false; }
-      html += `<h3>${escHtml(headMatch[1])}</h3>`;
-    } else if (sectionMatch) {
+      html += `<h3>${esc(head[1])}</h3>`;
+    } else if (section) {
       if (inList) { html += '</ul>'; inList = false; }
-      html += `<p style="margin-top:8px;font-size:11px;color:#5A7299;font-style:italic">${escHtml(sectionMatch[1])}</p>`;
-    } else if (taskMatch) {
+      html += `<p style="margin-top:8px;font-size:11px;color:var(--muted);font-style:italic">${esc(section[1])}</p>`;
+    } else if (task) {
       if (!inList) { html += '<ul class="checklist">'; inList = true; }
       const id = 'chk_' + Math.random().toString(36).slice(2);
-      html += `<li id="${id}"><div class="check-box" onclick="toggleCheck('${id}')"></div><span>${escHtml(taskMatch[1])}</span></li>`;
+      html += `<li id="${id}"><div class="check-box" onclick="toggleCheck('${id}')"></div><span>${esc(task[1])}</span></li>`;
     } else if (line.trim()) {
       if (inList) { html += '</ul>'; inList = false; }
-      html += `<p style="margin-top:6px">${escHtml(line)}</p>`;
+      html += `<p style="margin-top:5px">${esc(line)}</p>`;
     }
   });
   if (inList) html += '</ul>';
   return html;
 }
 
-function makeCard(title, htmlContent, rawText, index) {
+function makeCard(title, htmlContent, rawText, index, startCollapsed) {
   const card   = document.createElement('div');
-  const copyId = 'copy_' + Math.random().toString(36).slice(2);
-  card.className = 'result-card';
-  card.style.animationDelay = (index * 65) + 'ms';
+  const copyId = 'c_' + Math.random().toString(36).slice(2);
+  card.className = 'result-card' + (startCollapsed ? ' collapsed' : '');
+  card.style.animationDelay = (index * 55) + 'ms';
+  card.dataset.raw = rawText;
   card.innerHTML = `
-    <div class="card-header">
-      <span class="card-title">${escHtml(title)}</span>
-      <button class="copy-btn" id="${copyId}">
-        <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor">
-          <path d="M4 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H4z"/>
-        </svg>
-        Copy
-      </button>
+    <div class="card-header" onclick="toggleCard(this.parentElement)">
+      <div class="card-header-left">
+        <span class="collapse-arrow">▼</span>
+        <span class="card-title">${esc(title)}</span>
+      </div>
+      <div class="card-actions">
+        <button class="copy-btn" id="${copyId}" onclick="event.stopPropagation()">
+          <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M4 2h8a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2zm0 1a1 1 0 00-1 1v8a1 1 0 001 1h8a1 1 0 001-1V4a1 1 0 00-1-1H4z"/></svg>
+          Copy
+        </button>
+      </div>
     </div>
     <div class="card-body">${htmlContent}</div>
   `;
@@ -726,14 +677,38 @@ function makeCard(title, htmlContent, rawText, index) {
   return card;
 }
 
+function toggleCard(card) {
+  card.classList.toggle('collapsed');
+}
+
+function toggleAllCards() {
+  const cards = document.querySelectorAll('.result-card');
+  allCollapsed = !allCollapsed;
+  cards.forEach(c => c.classList.toggle('collapsed', allCollapsed));
+  const btn = document.querySelector('.results-toolbar .tb-btn');
+  if (btn) btn.innerHTML = (allCollapsed ? '▶ Expand All' : '▼ Collapse All').replace('▶','<svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M1 4h14v2H1V4zm0 5h14v2H1V9z"/></svg>').replace('▼','<svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M1 4h14v2H1V4zm0 5h14v2H1V9z"/></svg>');
+  const tBtn = document.querySelector('.results-toolbar .tb-btn');
+  if (tBtn) tBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M1 4h14v2H1V4zm0 5h14v2H1V9z"/></svg> ${allCollapsed ? 'Expand All' : 'Collapse All'}`;
+}
+
 function copyText(btn, text) {
   navigator.clipboard.writeText(text).then(() => {
     btn.classList.add('copied');
-    btn.innerHTML = `<svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.75.75 0 0 1 1.06-1.06L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0z"/></svg> Copied!`;
+    btn.innerHTML = `<svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg> Copied!`;
     setTimeout(() => {
       btn.classList.remove('copied');
-      btn.innerHTML = `<svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor"><path d="M4 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H4z"/></svg> Copy`;
-    }, 2000);
+      btn.innerHTML = `<svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M4 2h8a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2zm0 1a1 1 0 00-1 1v8a1 1 0 001 1h8a1 1 0 001-1V4a1 1 0 00-1-1H4z"/></svg> Copy`;
+    }, 2200);
+  });
+}
+
+function copyAllText(text) {
+  const btn = document.getElementById('copyAllBtn');
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.innerHTML;
+    btn.innerHTML = `<svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg> Copied!`;
+    btn.style.borderColor = 'var(--green)'; btn.style.color = 'var(--green)';
+    setTimeout(() => { btn.innerHTML = orig; btn.style.borderColor = ''; btn.style.color = ''; }, 2200);
   });
 }
 
@@ -745,33 +720,24 @@ function toggleCheck(id) {
 
 // ── History ───────────────────────────────────────────────────────────────────
 
-const HISTORY_KEY = 'mql_history';
-const MAX_HISTORY = 10;
+const HIST_KEY = 'mql_history';
 
-function loadHistory() {
-  try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); }
-  catch { return []; }
-}
-function saveHistory(entries) {
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(entries));
-}
+function loadHistory() { try { return JSON.parse(localStorage.getItem(HIST_KEY) || '[]'); } catch { return []; } }
+function saveHistory(e) { localStorage.setItem(HIST_KEY, JSON.stringify(e)); }
 
-function extractCompany(markdown) {
-  const m = markdown.match(/COMPANY:\s*(.+)/i);
-  if (m) return m[1].trim();
-  const m2 = markdown.match(/\*\*Assigned to:\*\*\s*(.+)/i);
-  return m2 ? m2[1].trim() : 'Unknown';
+function extractCompany(md) {
+  const m = md.match(/COMPANY:\s*(.+)/i);
+  return m ? m[1].trim() : (md.match(/\*\*Company:\*\*\s*(.+)/i) || ['','Unknown'])[1].trim();
 }
-
-function extractDecision(markdown) {
-  const m = markdown.match(/## DECISION\s*\n([A-Z_/ ]+)/);
+function extractDecision(md) {
+  const m = md.match(/## DECISION\s*\n([A-Z_/ ]+)/);
   return m ? m[1].trim().split('\n')[0].trim() : 'UNKNOWN';
 }
 
 function addHistoryEntry(markdown) {
   const entries = loadHistory();
   entries.unshift({ id: Date.now(), ts: new Date().toISOString(), company: extractCompany(markdown), decision: extractDecision(markdown), markdown });
-  if (entries.length > MAX_HISTORY) entries.length = MAX_HISTORY;
+  if (entries.length > 15) entries.length = 15;
   saveHistory(entries);
   renderHistoryList();
 }
@@ -779,13 +745,13 @@ function addHistoryEntry(markdown) {
 function formatRelTime(iso) {
   const diff = (Date.now() - new Date(iso)) / 1000;
   if (diff < 60)    return 'just now';
-  if (diff < 3600)  return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  if (diff < 3600)  return `${Math.floor(diff/60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
   return new Date(iso).toLocaleDateString();
 }
 
-function decisionBadgeClass(decision) {
-  const t = decision.toUpperCase();
+function decisionClass(dec) {
+  const t = dec.toUpperCase();
   if (t.includes('INDIVIDUAL'))    return 'badge-individual';
   if (t.includes('SUPPORT'))       return 'badge-support';
   if (t.includes('COMMERCIAL'))    return 'badge-commercial';
@@ -797,20 +763,17 @@ function decisionBadgeClass(decision) {
 
 function renderHistoryList() {
   const entries = loadHistory();
-  const list    = document.getElementById('histList');
-  const countEl = document.getElementById('histCount');
-  countEl.textContent = entries.length ? `(${entries.length})` : '';
-
+  document.getElementById('histCount').textContent = entries.length ? `(${entries.length})` : '';
+  const list = document.getElementById('histList');
   if (!entries.length) {
-    list.innerHTML = `<div style="color:var(--muted);font-size:12px;padding:8px 0">No history yet — processed leads will appear here.</div>`;
+    list.innerHTML = `<div style="color:var(--muted);font-size:12px;padding:6px 0">No history yet — processed leads will appear here.</div>`;
     return;
   }
-
   list.innerHTML = entries.map(e => `
     <div class="history-entry" onclick="restoreHistory(${e.id})">
       <span class="hist-time">${formatRelTime(e.ts)}</span>
-      <span class="hist-company">${escHtml(e.company)}</span>
-      <span class="decision-badge ${decisionBadgeClass(e.decision)}" style="font-size:10px;padding:2px 8px">${escHtml(e.decision.slice(0,20))}</span>
+      <span class="hist-company">${esc(e.company)}</span>
+      <span class="decision-badge ${decisionClass(e.decision)}" style="font-size:9.5px;padding:2px 7px">${esc(e.decision.slice(0,22))}</span>
     </div>
   `).join('');
 }
@@ -822,25 +785,27 @@ function toggleHistory() {
 
 function clearHistory(event) {
   event.stopPropagation();
-  localStorage.removeItem(HISTORY_KEY);
+  localStorage.removeItem(HIST_KEY);
   renderHistoryList();
 }
 
 function restoreHistory(id) {
-  const entry = loadHistory().find(e => e.id === id);
-  if (!entry) return;
+  const e = loadHistory().find(x => x.id === id);
+  if (!e) return;
   document.getElementById('emptyState').style.display = 'none';
   const content = document.getElementById('resultContent');
   content.style.display = 'flex';
-  renderResult(content, entry.markdown);
+  startTime = new Date(e.ts).getTime();
+  renderResult(content, e.markdown);
   document.getElementById('newLeadBtn').style.display = 'block';
   document.getElementById('resultPanel').scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ── Keyboard shortcut ─────────────────────────────────────────────────────────
+// ── Keyboard shortcuts ────────────────────────────────────────────────────────
 
 document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && e.ctrlKey) submitLead();
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) submitLead();
+  if (e.key === 'Escape') newLead();
 });
 
 // ── Init ──────────────────────────────────────────────────────────────────────
