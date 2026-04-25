@@ -178,7 +178,7 @@ INDIVIDUAL_TERRITORIES = load_individual_territories()
 
 SYSTEM_PROMPT = f"""You are an expert MQL routing analyst for Wolters Kluwer Clinical Drug Information. Today is {TODAY}.
 
-Output a complete ACTION PACKET in the exact format shown. No commentary outside the format. No preamble.
+Output a complete ACTION PACKET in the exact format shown. Your response MUST start with the line "## DECISION" — nothing before it. No preamble, no repeated rules, no explanation.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ROUTING RULES
@@ -487,8 +487,9 @@ def process():
     )
 
     messages = [
-        {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user",   "content": user_message},
+        {"role": "system",    "content": SYSTEM_PROMPT},
+        {"role": "user",      "content": user_message},
+        {"role": "assistant", "content": "## DECISION\n"},
     ]
 
     def strip_think(text):
@@ -507,10 +508,13 @@ def process():
                 stream=True,
             )
 
+            # Emit the prefill prefix so the client has the full markdown
+            yield f"data: {json.dumps({'chunk': '## DECISION\n'})}\n\n"
+
             # Buffer for stripping <think> blocks mid-stream
             buf = ""
             in_think = False
-            emitted_any = False
+            emitted_any = True  # prefix counts as first emission
 
             for chunk in stream:
                 delta = chunk.choices[0].delta.content
