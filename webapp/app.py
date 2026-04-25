@@ -16,6 +16,8 @@ app = Flask(__name__)
 DATA_DIR = Path(__file__).parent.parent / "All files"
 
 TODAY = date.today().strftime("%Y-%m-%d")
+_d = date.today()
+TODAY_DISPLAY = f"{_d.month}/{_d.day}/{_d.year}"
 REMINDER_DATE = (date.today() + timedelta(days=3)).strftime("%Y-%m-%d")
 REMINDER_DATE_5 = (date.today() + timedelta(days=5)).strftime("%Y-%m-%d")
 
@@ -219,6 +221,21 @@ RESEARCH LINKS:
   - Definitive: https://app.definitivehc.com (search company name)
   - LinkedIn: https://www.linkedin.com/company/[slug]
   - Website: [domain]
+```
+
+---
+
+## SALESFORCE NOTE
+*(Paste this into the Salesforce Comment / Activity field)*
+
+```
+{TODAY_DISPLAY} Syamil:
+- This is a lead for [Product] from Website.
+- This is a [Ambulatory Clinic / Hospital / University / Health System / Other]. Headquartered in [Real HQ City], [Real HQ State][; if lead-stated location differs from HQ: " — Lead listed [lead city/state]; verify HQ"]. Website: [domain or "Research needed"]
+- Lead Title: [Title from lead]. LinkedIn: [https://www.linkedin.com/company/slug — verify]
+- SF Status: Checked ([New Account / Existing Customer — verify in SFDC]).
+- Size: [number of beds OR clinician user count, or "Not stated — verify in Definitive"] ([Qualified / Not yet verified]).
+- Routing: Based on HQ [City], [State] (zip: [zip if provided in lead, else "verify"]), mapped to [Territory code + name]. Assigned to [Rep Full Name].
 ```
 
 ---
