@@ -4,7 +4,8 @@ import re
 from datetime import date, timedelta
 from pathlib import Path
 from flask import Flask, render_template, request, jsonify
-from groq import Groq
+import time
+from groq import Groq, APITimeoutError, AuthenticationError, RateLimitError
 import pandas as pd
 from dotenv import load_dotenv
 
@@ -86,6 +87,11 @@ Given a lead ticket, output a complete ACTION PACKET in the exact format shown. 
 ROUTING RULES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+FIELD EXTRACTION (for Salesforce / form-fill input)
+- Input may be a structured SF export, a copy-paste of SF record view, or a free-text email.
+- Treat labeled lines ("Company: Acme", "Email: x@y.com") as authoritative field values.
+- If a field is absent, note "Not stated" in the QUALIFICATION NOTE — do not guess or hallucinate values.
+
 STEP 1 — VALIDITY & INTENT
 - Fake/gibberish email or domain strongly contradicts a real healthcare company → SCAM
 - Comment mentions login/password/access errors → SUPPORT
@@ -96,10 +102,13 @@ STEP 2 — LOCATION
 - Canada, Ontario → assign to Susan Roy
 - Canada, other province → assign to Cheryl Leger
 - Must be a healthcare provider to proceed
+- If state/country is absent or ambiguous, add a ROUTING NOTE: "Location not stated — assumed US; verify." and proceed with US routing logic.
 
 STEP 3 — COMMERCIAL GATE
 - Primary business is NOT healthcare provision (payer, software co., consulting) → COMMERCIAL → Michele Leoni
 - Exception: retail pharmacy clinic = provider
+
+DEFINITION — "clinician user": any licensed or credentialed healthcare professional who directly uses the software for patient care (physicians, pharmacists, nurses, PAs, NPs, dentists). Administrators, IT staff, researchers, and billing staff do NOT count toward user-count thresholds. When user count is ambiguous (e.g. "a few", "our team"), route as NEEDS_CLARIFICATION rather than guessing.
 
 STEP 4 — PRODUCT ROUTING (updated 3/31/2026)
 
@@ -296,36 +305,54 @@ def process():
     if not api_key or api_key == "your-api-key-here":
         return jsonify({"error": "Groq API key not configured. Add GROQ_API_KEY to the .env file."}), 500
 
-    user_message = f"""Please process this MQL lead:
+    raw_text = data.get('raw_text', '').strip()
+    if not raw_text or len(raw_text) < 10:
+        return jsonify({"error": "Lead text is too short. Paste the full Salesforce record.", "error_type": "input"}), 400
+    if len(raw_text) > 8000:
+        return jsonify({"error": f"Input is {len(raw_text):,} characters — limit is 8,000. Trim the record and try again.", "error_type": "input"}), 400
 
-Name: {data.get('name', 'Unknown')}
-Email: {data.get('email', 'Unknown')}
-Title: {data.get('title', 'Not provided')}
-Company: {data.get('company', 'Unknown')}
-Location: {data.get('city_state', 'Unknown')}, {data.get('country', 'US')}
-Product Interest: {data.get('product', 'Not specified')}
-Number of Users/Beds: {data.get('num_users', 'Not stated')}
-Lead Source: {data.get('lead_source', 'Website form fill')}
-Existing Customer: {data.get('existing_customer', 'Unknown')}
+    user_message = (
+        "The following text was copied directly from a Salesforce lead record or a form-fill email. "
+        "Salesforce records typically contain labeled fields like 'First Name:', 'Last Name:', 'Email:', "
+        "'Company:', 'Title:', 'City:', 'State/Province:', 'Lead Source:', 'Number of Users:', "
+        "'Comments:', 'Existing Customer:'. Extract the relevant values from whatever format is provided "
+        "(labeled fields, free text, or mixed), then apply the routing rules.\n\n"
+        f"{raw_text}"
+    )
 
-Comment/Inquiry:
-{data.get('comment') or '[NO COMMENT PROVIDED]'}
-"""
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "user",   "content": user_message}
+    ]
+
+    def call_groq(client):
+        return client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            max_tokens=4096,
+            timeout=30,
+            messages=messages
+        )
 
     try:
         client = Groq(api_key=api_key)
-        message = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            max_tokens=4096,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": user_message}
-            ]
-        )
+        try:
+            message = call_groq(client)
+        except APITimeoutError:
+            time.sleep(2)
+            try:
+                message = call_groq(client)
+            except APITimeoutError:
+                return jsonify({"error": "The AI took too long to respond. Groq may be under load — try again in a moment.", "error_type": "timeout"}), 504
+
         result = message.choices[0].message.content
         return jsonify({"result": result})
+
+    except AuthenticationError:
+        return jsonify({"error": "Groq API key is invalid or expired. Check the GROQ_API_KEY value in the .env file.", "error_type": "auth"}), 401
+    except RateLimitError:
+        return jsonify({"error": "Groq rate limit reached. Wait 60 seconds and try again.", "error_type": "rate_limit"}), 429
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": f"Unexpected error: {str(e)}", "error_type": "unknown"}), 500
 
 
 if __name__ == "__main__":
