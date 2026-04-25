@@ -458,7 +458,9 @@ If existing customer: flag CHECK SFDC FOR EXISTING OPPORTUNITY.]
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    resp = app.make_response(render_template("index.html"))
+    resp.headers["Cache-Control"] = "no-store"
+    return resp
 
 
 @app.route("/health")

@@ -480,7 +480,10 @@ async function submitLead() {
             streamPre.scrollTop = streamPre.scrollHeight;
           } else if (evt.done) {
             stopProgress();
-            renderResult(content, fullText);
+            try { renderResult(content, fullText); } catch(renderErr) {
+              console.error('renderResult failed:', renderErr);
+              content.innerHTML = `<pre style="color:var(--text);background:var(--card);padding:16px;border-radius:8px;white-space:pre-wrap">${esc(fullText)}</pre>`;
+            }
             addHistoryEntry(fullText);
             document.getElementById('newLeadBtn').style.display = 'block';
             // Scroll result panel to top
@@ -499,7 +502,10 @@ async function submitLead() {
     }
   } catch (e) {
     stopProgress();
-    renderError(content, e.message, 'unknown');
+    const msg = (e instanceof SyntaxError)
+      ? 'Unexpected response format. Reload the page (Ctrl+Shift+R) and try again.'
+      : (e.message || 'Network error. Check your connection and try again.');
+    renderError(content, msg, 'unknown');
     gotError = true;
   } finally {
     btn.disabled = false;
@@ -540,7 +546,7 @@ function renderResult(container, markdown) {
       <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M1 4h14v2H1V4zm0 5h14v2H1V9z"/></svg>
       Collapse All
     </button>
-    <button class="tb-btn" onclick="copyAllText(${JSON.stringify(markdown).replace(/'/g,"\\'")})" id="copyAllBtn">
+    <button class="tb-btn" id="copyAllBtn">
       <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M4 2h8a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2zm0 1a1 1 0 00-1 1v8a1 1 0 001 1h8a1 1 0 001-1V4a1 1 0 00-1-1H4z"/></svg>
       Copy All
     </button>
@@ -550,6 +556,7 @@ function renderResult(container, markdown) {
     </button>
   `;
   container.appendChild(toolbar);
+  toolbar.querySelector('#copyAllBtn').addEventListener('click', () => copyAllText(markdown));
 
   // Decision card first
   const decisionMatch = markdown.match(/## DECISION\s*\n([\s\S]*?)(?=\n---|\n##|$)/);
