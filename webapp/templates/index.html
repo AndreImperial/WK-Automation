@@ -268,7 +268,7 @@
   <div class="brand">Wolters Kluwer CDI</div>
   <h1>MQL Lead Router</h1>
   <div class="header-spacer"></div>
-  <div class="model-tag">Llama 3.3 70B</div>
+  <div class="model-tag">Llama 4 Scout</div>
 </header>
 
 <div class="page-shell">
@@ -366,10 +366,43 @@ textarea.addEventListener('input', () => {
 const ERR_META = {
   timeout:    { icon: '⏱', cat: 'Timeout',    hint: 'The AI took too long. Click Generate again — it usually works on retry.' },
   auth:       { icon: '🔑', cat: 'Auth Error', hint: 'API key missing or invalid. Check GROQ_API_KEY in the .env file.' },
-  rate_limit: { icon: '⏳', cat: 'Rate Limit', hint: 'Too many requests. Wait ~60 seconds then try again.' },
+  rate_limit: { icon: '⏳', cat: 'Rate Limit', hint: 'API rate limit reached. Auto-retrying shortly…' },
   input:      { icon: '✏️', cat: 'Input',      hint: 'Check the length and content of the pasted text.' },
   unknown:    { icon: '⚠️', cat: 'Error',      hint: 'Something unexpected happened. Try again.' },
 };
+
+let _rateLimitTimer = null;
+
+function startRateLimitCountdown(container, seconds) {
+  if (_rateLimitTimer) clearInterval(_rateLimitTimer);
+  let remaining = seconds;
+
+  const render = () => {
+    container.innerHTML = `<div class="error-block" style="border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.06)">
+      <div class="error-header">
+        <span class="error-icon">⏳</span>
+        <span class="error-category" style="background:rgba(251,191,36,.15);color:var(--yellow)">Rate Limit</span>
+      </div>
+      <div class="error-detail">Groq API rate limit reached — auto-retrying in <strong style="color:var(--yellow)">${remaining}s</strong>…</div>
+      <div class="error-hint">Free-tier limit. The request will retry automatically. No action needed.</div>
+      <div style="margin-top:8px;height:3px;background:var(--border);border-radius:2px;overflow:hidden">
+        <div style="height:100%;background:var(--yellow);border-radius:2px;width:${Math.round((1 - remaining/seconds)*100)}%;transition:width 1s linear"></div>
+      </div>
+    </div>`;
+  };
+
+  render();
+  _rateLimitTimer = setInterval(() => {
+    remaining--;
+    if (remaining <= 0) {
+      clearInterval(_rateLimitTimer);
+      _rateLimitTimer = null;
+      submitLead();
+    } else {
+      render();
+    }
+  }, 1000);
+}
 
 function renderError(container, message, errorType) {
   const m = ERR_META[errorType] || ERR_META.unknown;
@@ -494,7 +527,11 @@ async function submitLead() {
             }
           } else if (evt.error) {
             stopProgress();
-            renderError(content, evt.error, evt.error_type || 'unknown');
+            if (evt.error_type === 'rate_limit') {
+              startRateLimitCountdown(content, evt.retry_after || 62);
+            } else {
+              renderError(content, evt.error, evt.error_type || 'unknown');
+            }
             gotError = true;
           }
         }
@@ -518,6 +555,7 @@ async function submitLead() {
 }
 
 function newLead() {
+  if (_rateLimitTimer) { clearInterval(_rateLimitTimer); _rateLimitTimer = null; }
   textarea.value = '';
   charCountEl.textContent = '0 / 8,000';
   charCountEl.className = 'char-count';

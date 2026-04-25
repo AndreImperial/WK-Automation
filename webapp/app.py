@@ -20,7 +20,7 @@ TODAY_DISPLAY = f"{_d.month}/{_d.day}/{_d.year}"
 REMINDER_DATE  = (date.today() + timedelta(days=3)).strftime("%Y-%m-%d")
 REMINDER_DATE_5 = (date.today() + timedelta(days=5)).strftime("%Y-%m-%d")
 
-MODEL = "llama-3.3-70b-versatile"
+MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"
 
 
 # ── Reference data ─────────────────────────────────────────────────────────────
@@ -211,56 +211,53 @@ researchers, billing staff do NOT count. Ambiguous count ("a few", "our team") �
 
 STEP 4 — PRODUCT ROUTING
 
+To determine EAST vs WEST, use the state lists in the territory table (PART A).
+To find the Account Owner AM, look up the lead's state in PART B.
+
 ─── UPTODATE ──────────────────────────────────────────────
 Government (US Fed/VA/Military/Tribal):
-  Assign: Justin Schenker (GOVERNMENT_2) | CC: Don Piccano
+  Assign: Justin Schenker | CC: Don Piccano
 
 Support request only:
   Send to: customerservice@uptodate.com (do not assign a rep)
 
-Hospital (any size):
-  Assign: UTD IS Rep from territory table | CC: Account Owner AM + Don Piccano
-
-University / School (any size):
-  Assign: UTD IS Rep from territory table | CC: Account Owner AM + Don Piccano
-
-Clinic ≥11 clinician users:
-  Assign: UTD IS Rep from territory table | CC: Account Owner AM + Don Piccano
+Hospital / University / School / Clinic ≥11 users:
+  EAST state → Assign: Alexey Fingado | CC: [PART B Account Owner AM] + Don Piccano
+  WEST state → Assign: Jerry McAuliffe | CC: [PART B Account Owner AM] + Don Piccano
 
 Clinic ≤10 clinician users → INDIVIDUAL SEGMENT:
   Assign: customerservice@uptodate.com | CC: Don Piccano
 
 ─── LEXICOMP / LEXIDRUG ────────────────────────────────────
 Government (US Fed/VA/Military/Tribal):
-  Assign: Justin Schenker (GOVERNMENT_2) | CC: CDI product specialist + Don Piccano
+  Assign: Justin Schenker | CC: Don Piccano
 
 Support request only:
   Send to: cs-cdi-support@wolterskluwer.com
 
 Hospital ≥401 beds:
-  Assign: Account Owner AM from territory table | CC: Andrew Yonke + Don Piccano
+  Assign: [PART B Account Owner AM] | CC: Andrew Yonke + Don Piccano
 
 Hospital ≤400 beds:
-  Assign: Andrew Yonke (Lexi IS Rep) | CC: Account Owner AM + Don Piccano
+  Assign: Andrew Yonke | CC: [PART B Account Owner AM] + Don Piccano
 
 Clinic ≥15 clinician users:
-  Assign: Andrew Yonke (Lexi IS Rep) | CC: Account Owner AM + Don Piccano
+  Assign: Andrew Yonke | CC: [PART B Account Owner AM] + Don Piccano
 
 Clinic ≤14 clinician users → INDIVIDUAL SEGMENT:
-  Look up state → Jill / Jay / Sam | CC: Jeff Kelly + Don Piccano
+  Look up state in Individual Territories → Jill / Jay / Sam | CC: Jeff Kelly + Don Piccano
 
 University / School:
-  Assign: Andrew Yonke (Lexi IS Rep) | CC: Account Owner AM + Don Piccano
+  Assign: Andrew Yonke | CC: [PART B Account Owner AM] + Don Piccano
 
 ─── MEDI-SPAN / PRICE RX ───────────────────────────────────
 US Hospital / Health System / Clinic:
-  Assign: Andrew Yonke (Lexi/Medi DI Specialist) | CC: Account Owner AM + Ron McBride + Jess Hissem + Don Piccano
+  Assign: Andrew Yonke | CC: [PART B Account Owner AM] + Ron McBride + Jess Hissem + Don Piccano
 
 Canada:
-  Assign: Andrea (Medi-Span Specialist) + territory rep | CC: Andrea Cheshire + Don Piccano
+  Assign: Andrea Cheshire (Medi-Span Specialist) | CC: Don Piccano
 
 Non-healthcare → Michele Leoni (COMMERCIAL)
-Home health: Andrea (Medi-Span Specialist) + territory rep | CC: Don Piccano
 Support only: medispan-support@wolterskluwer.com
 PriceRx: Qualify via email first (price type, use case, volume); attach SKU brochure.
 
@@ -268,16 +265,17 @@ PriceRx: Qualify via email first (price type, use case, volume); attach SKU broc
 Support only: Emmi customer success team
 
 New Emmi:
-  Assign: Emmi Sales Exec (New Business) | CC: Emmi Exec (New Business) + Emmi Director + Don Piccano
+  Assign: Emmi Sales Exec (New Business) | CC: Emmi Director + Don Piccano
 
 Emmi upsell:
-  Assign: Emmi Sales Exec (Renewal) | CC: Emmi Exec (Renewal) + Emmi Director + Don Piccano
+  Assign: Emmi Sales Exec (Renewal) | CC: Emmi Director + Don Piccano
 
 EmmiEducate ≥101 beds:
   Assign: Emmi Sales Exec (New Business) | CC: Don Piccano
 
 EmmiEducate ≤100 beds:
-  Assign: PE IS Rep from territory table | CC: IS Director + Emmi Sales Exec + Don Piccano
+  EAST state → Assign: Steve Swope | CC: IS Director + Don Piccano
+  WEST state → Assign: Pete Runhaar | CC: IS Director + Don Piccano
 
 STEP 5 — TERRITORY & REP LOOKUP
 
@@ -560,7 +558,7 @@ def process():
         except AuthenticationError:
             yield f"data: {json.dumps({'error': 'API key invalid or expired.', 'error_type': 'auth'})}\n\n"
         except RateLimitError:
-            yield f"data: {json.dumps({'error': 'Rate limit reached. Wait 60 seconds and retry.', 'error_type': 'rate_limit'})}\n\n"
+            yield f"data: {json.dumps({'error': 'Rate limit reached.', 'error_type': 'rate_limit', 'retry_after': 62})}\n\n"
         except Exception as e:
             yield f"data: {json.dumps({'error': str(e), 'error_type': 'unknown'})}\n\n"
 
